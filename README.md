@@ -91,52 +91,24 @@ Repeat the process for **Windows Defender**:
 
 ---
 
-### **Step 4 — Validate Data in Kibana (Discover)**
+### **Step 4 — Validate Data in Elastic (Discover)**
 Open **Discover** and run quick KQL checks:
 
-**Sysmon**
-
-event.provider: "Microsoft-Windows-Sysmon"
-Windows Defender (lab filter)
-
-kql
-Copy code
-event.provider: "Microsoft-Windows-Windows Defender" AND event.code: (1116 or 1117 or 5001)
-You should see recent documents flowing in from both sources.
+WinLog_event_id: 5001 
 
 📸 Screenshots:
-
+![eventlog integration](./screenshots/winevent.png)
 
 🧩 Troubleshooting (What I Hit)
+
 Symptom	Cause	What I Did	Safer Final Recommendation
 Agent showed CPU/Memory = N/A in Fleet	Connectivity from components to Elasticsearch 9200/tcp was blocked	In Vultr Firewall Group, I temporarily changed inbound IPv4 to TCP 9200 from Anywhere → metrics appeared	Do not leave 9200 open to the world. Restrict 9200 to Fleet Server’s IP (and Kibana host if separate), or keep it private on VPC. Keep 5601 and SSH/RDP limited to your IP
 No Sysmon/Defender docs in Discover	Wrong channel name	Re-copied Full Name from Event Viewer → Properties and pasted into Channel name	Double-check exact channel path; avoid typos
 Integration saved but no data	Integration not applied to correct hosts	Re-applied to Existing hosts under the Windows policy	Confirm target agent shows Policy updated in Fleet
 
+
 🔐 After confirming data, roll back the temporary “9200 from anywhere” rule to a narrow allowlist (Fleet server IP only) or private networking.
 
-📸 Screenshot Checklist
-swift
-Copy code
-/screenshots/
-├── ingest-architecture.png
-├── kibana-integrations-catalog.png
-├── eventviewer-sysmon-operational-props.png
-├── kibana-custom-winevent-sysmon.png
-├── eventviewer-defender-operational-props.png
-├── kibana-custom-winevent-defender.png
-├── kibana-discover-sysmon.png
-├── kibana-discover-defender.png
-├── fleet-agents-policy-updated.png
-└── vultr-firewall-9200-temp-and-final.png
-(Name files in kebab-case. Keep them in /screenshots/ and reference as shown above.)
-
-📚 References
-Kibana Integrations → Custom Windows Event Logs (UI flow)
-
-My prior repo: Elastic Agent & Fleet Server Setup (base environment + Windows policy)
-
-Windows Event Viewer channel paths for Sysmon and Windows Defender
 
 🏁 Results
 Sysmon and Windows Defender events are flowing into Elasticsearch via the Custom Windows Event Logs integration
