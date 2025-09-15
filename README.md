@@ -95,7 +95,7 @@ Repeat the process for **Windows Defender**:
 Open **Discover** and run quick KQL checks:
 
 **Sysmon**
-```kql
+
 event.provider: "Microsoft-Windows-Sysmon"
 Windows Defender (lab filter)
 
